@@ -1,8 +1,14 @@
 <template>
-  <el-config-provider namespace="ep">
+  <el-config-provider :locale="currentLocale">
     <router-view />
   </el-config-provider>
 </template>
+
+<script setup lang="ts">
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import { computed } from 'vue';
+const currentLocale = computed(() => zhCn)
+</script>
 
 <style>
 body {

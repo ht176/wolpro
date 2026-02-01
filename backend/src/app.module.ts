@@ -11,7 +11,7 @@ import { ScanModule } from './scan/scan.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'db.sqlite',
+      database: process.env.DATABASE_PATH || 'db.sqlite',
       entities: [Device],
       synchronize: true,
     }),

@@ -1,2 +1,22 @@
+# General
 **/node_modules
 **/dist
+**/.DS_Store
+**/.idea
+**/.vscode
+*.log
+*.sqlite
+**/.agents
+**/coverage
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Frontend
+**/dist-ssr
+*.local
+
+# Backend
+**/test/coverage

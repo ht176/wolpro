@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DevicesService } from './devices.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { UpdateDeviceDto } from './dto/update-device.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('devices')
 @Controller('devices')
 export class DevicesController {
   constructor(private readonly devicesService: DevicesService) {}
@@ -15,6 +17,11 @@ export class DevicesController {
   @Get()
   findAll() {
     return this.devicesService.findAll();
+  }
+
+  @Get('status')
+  checkStatus() {
+    return this.devicesService.checkAllStatus();
   }
 
   @Get(':id')

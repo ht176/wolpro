@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    image: wolpro-backend:latest
+    container_name: wolpro-backend
+    restart: unless-stopped
+    # Critical: Use host network to allow ARP scanning and WOL broadcasting
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      # Ensure database is stored in a volume
+      - DATABASE_PATH=/app/data/db.sqlite
+    volumes:
+      # Persist the SQLite database
+      - wolpro-data:/app/data
+
+  frontend:
+    build: ./frontend
+    image: wolpro-frontend:latest
+    container_name: wolpro-frontend
+    restart: unless-stopped
+    # Use host network so frontend can easily reach backend at localhost:3000
+    # and simplifies network complexity for LAN tools
+    network_mode: host
+    depends_on:
+      - backend
+
+volumes:
+  wolpro-data:
