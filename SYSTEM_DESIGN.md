@@ -21,6 +21,7 @@
 
 #### **后端 (NestJS)**
 
+- **API 文档**: 集成 **Swagger** (`@nestjs/swagger`)，自动生成 OpenAPI 规范文档，访问地址为 `/api`。
 - **认证模块 (`AuthModule`):**
   - 提供基础的登录认证功能（如 JWT），保护设备管理和唤醒接口，防止未授权访问。
 - **设备管理模块 (`DeviceModule`):**
@@ -64,8 +65,9 @@
 
 - **构建工具:** **Vite** - 提供极速的开发服务器启动速度和高效的热模块替换 (HMR)。
 - **核心框架:** **Vue 3** (使用组合式 API `Composition API` 风格，能更好地组织代码逻辑)。
-- **UI 框架:** **Element Plus** 或 **Ant Design Vue** - 提供一套美观且功能丰富的企业级组件库，可以极大加速UI界面的开发。
-- **HTTP 客户端:** **Axios** - 一个成熟、稳定、功能丰富的库，用于向后端发送 REST API 请求。
+- **UI 框架:** **Element Plus** (配合 `unplugin-vue-components` 实现按需自动导入) - 提供一套美观且功能丰富的企业级组件库。
+- **CSS 框架:** **UnoCSS** - 即时按需原子化 CSS 引擎，提供轻量、高性能的样式开发体验。
+- **HTTP 客户端:** **Axios** (配合 **NSwag**) - 使用 NSwag 根据后端 Swagger 文档自动生成 TypeScript 客户端代码，确保前后端接口类型安全且同步。
 - **状态管理:** **Pinia** - Vue 3 官方推荐的新一代状态管理库，设计更轻量、直观，且对 TypeScript 支持友好。
 - **WebSocket 客户端:** **`socket.io-client`** - `Socket.IO` 的官方客户端库，用于与后端的 WebSocket 服务进行配对通信。
 

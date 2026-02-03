@@ -6,24 +6,21 @@ services:
     image: wolpro-backend:latest
     container_name: wolpro-backend
     restart: unless-stopped
-    # Critical: Use host network to allow ARP scanning and WOL broadcasting
-    network_mode: host
     environment:
       - NODE_ENV=production
-      # Ensure database is stored in a volume
       - DATABASE_PATH=/app/data/db.sqlite
+    ports:
+      - "8002:3000"
     volumes:
-      # Persist the SQLite database
-      - wolpro-data:/app/data
+      - ./data:/app/data
 
   frontend:
     build: ./frontend
     image: wolpro-frontend:latest
     container_name: wolpro-frontend
     restart: unless-stopped
-    # Use host network so frontend can easily reach backend at localhost:3000
-    # and simplifies network complexity for LAN tools
-    network_mode: host
+    ports:
+      - "8003:80"
     depends_on:
       - backend
 

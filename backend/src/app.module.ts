@@ -23,4 +23,3 @@ import { ScanModule } from './scan/scan.module';
   providers: [AppService],
 })
 export class AppModule {}
-

@@ -19,7 +19,7 @@
       </el-menu>
       
       <div class="p-4 border-t border-gray-200 dark:border-gray-700 text-center text-xs text-gray-400">
-        v1.0.0
+        v1.1.0
       </div>
     </el-aside>
 
@@ -81,13 +81,13 @@
               </div>
             </template>
             
-            <el-table :data="store.devices" style="width: 100%" size="large">
+            <el-table :data="devices" style="width: 100%" size="large">
               <el-table-column prop="name" label="设备名称" min-width="150">
                 <template #default="{ row }">
                   <div class="flex items-center gap-2">
                     <div 
                       class="w-2.5 h-2.5 rounded-full transition-colors duration-300"
-                      :class="store.deviceStatuses[row.id] ? 'bg-green-500 shadow-[0_0_4px_#22c55e]' : 'bg-gray-300 dark:bg-gray-600'"
+                      :class="deviceStatuses[row.id] ? 'bg-green-500 shadow-[0_0_4px_#22c55e]' : 'bg-gray-300 dark:bg-gray-600'"
                     ></div>
                     <span class="font-medium text-gray-800 dark:text-gray-200">{{ row.name }}</span>
                   </div>
@@ -135,7 +135,7 @@
         <!-- Scanner View -->
         <div v-else-if="activeTab === 'scanner'" class="animate-fade-in">
           <el-card shadow="never" class="!border-none !rounded-lg shadow-sm dark:bg-gray-800">
-            <div class="flex flex-col items-center justify-center py-10" v-if="!store.isScanning && store.scannedDevices.length === 0">
+            <div class="flex flex-col items-center justify-center py-10" v-if="!scanStore.isScanning && scanStore.scannedDevices.length === 0">
               <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-full mb-6">
                 <div class="i-ep-search w-12 h-12 text-blue-500 inline-block" />
               </div>
@@ -152,20 +152,20 @@
               <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-3">
                   <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 m-0">扫描结果</h3>
-                  <el-tag v-if="store.isScanning" type="warning" effect="dark" class="animate-pulse flex items-center">
+                  <el-tag v-if="scanStore.isScanning" type="warning" effect="dark" class="animate-pulse flex items-center">
                     <div class="i-ep-loading w-4 h-4 mr-1 animate-spin inline-block" />
                     正在扫描...
                   </el-tag>
                   <el-tag v-else type="success" effect="plain">
-                    扫描完成，发现 {{ store.scannedDevices.length }} 个设备
+                    扫描完成，发现 {{ scanStore.scannedDevices.length }} 个设备
                   </el-tag>
                 </div>
-                <el-button v-if="!store.isScanning" @click="handleScan" plain>
+                <el-button v-if="!scanStore.isScanning" @click="handleScan" plain>
                   <template #icon><div class="i-ep-refresh w-4 h-4" /></template> 重新扫描
                 </el-button>
               </div>
 
-              <el-table :data="store.scannedDevices" style="width: 100%" stripe>
+              <el-table :data="mergedScannedDevices" style="width: 100%" stripe>
                 <el-table-column prop="ip" label="IP 地址" width="180" />
                 <el-table-column prop="mac" label="MAC 地址" width="180">
                   <template #default="{ row }">
@@ -216,28 +216,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useDeviceStore, type Device, type ScannedDevice } from '../stores/deviceStore';
+import { ref, onMounted, computed, watch } from 'vue';
+import { useScanStore, type ScannedDevice } from '../stores/deviceStore';
 import DeviceModal from '../components/DeviceModal.vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
+import { DevicesServiceProxy, WolServiceProxy, WakeDeviceDto, CreateDeviceDto, UpdateDeviceDto, Device } from '../api/WolServiceProxies';
 
 // --- State ---
-const store = useDeviceStore();
+const scanStore = useScanStore();
 const activeTab = ref<string>('dashboard');
 const showModal = ref<boolean>(false);
 const currentDevice = ref<Partial<Device> | null>(null);
 const isCheckingStatus = ref<boolean>(false);
 const isDark = ref<boolean>(false);
+const devices = ref<Device[]>([]);
+const deviceStatuses = ref<Record<number, boolean>>({});
+
+// --- API Clients ---
+const baseUrl = import.meta.env.VITE_API_URL || '';
+const devicesClient = new DevicesServiceProxy(baseUrl);
+const wolClient = new WolServiceProxy(baseUrl);
 
 // --- Computed ---
 const onlineDevicesCount = computed(() => {
-  return store.devices.filter(d => store.deviceStatuses[d.id]).length;
+  return devices.value.filter(d => deviceStatuses.value[d.id]).length;
 });
 
 const statsCards = computed(() => [
   {
     label: '设备总数',
-    value: store.devices.length,
+    value: devices.value.length,
     iconClass: 'i-ep-monitor',
     iconBgClass: 'bg-blue-50 dark:bg-blue-900/30 text-blue-500',
     valueClass: 'text-gray-800 dark:text-gray-100'
@@ -259,11 +267,19 @@ const statsCards = computed(() => [
   }
 ]);
 
+const mergedScannedDevices = computed(() => {
+    const savedMacs = new Set(devices.value.map(d => d.macAddress));
+    return scanStore.scannedDevices.map(d => ({
+        ...d,
+        isSaved: savedMacs.has(d.mac)
+    }));
+});
+
 // --- Lifecycle ---
 onMounted(async () => {
-  await store.fetchDevices();
+  await fetchDevices();
   handleCheckStatus();
-  store.initSocket();
+  scanStore.initSocket();
   
   // Init Dark Mode
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -271,7 +287,80 @@ onMounted(async () => {
   }
 });
 
-// --- Methods ---
+// --- API Methods ---
+async function fetchDevices() {
+    try {
+        devices.value = await devicesClient.devicesController_findAll();
+    } catch (e) {
+        ElMessage.error('获取设备列表失败');
+    }
+}
+
+async function handleCheckStatus() {
+  isCheckingStatus.value = true;
+  try {
+      const statuses = await devicesClient.devicesController_checkStatus();
+      deviceStatuses.value = statuses.reduce((acc: any, curr: any) => {
+          acc[curr.id] = curr.isOnline;
+          return acc;
+      }, {});
+  } catch (e) {
+      console.error(e);
+  }
+  isCheckingStatus.value = false;
+}
+
+async function handleWake(device: Device) {
+  try {
+    const dto = new WakeDeviceDto({ macAddress: device.macAddress });
+    await wolClient.wolController_wake(dto);
+    ElMessage.success(`已向 ${device.name} 发送唤醒包`);
+  } catch (e) {
+    ElMessage.error('唤醒信号发送失败');
+  }
+}
+
+async function handleDelete(device: Device) {
+  ElMessageBox.confirm(
+    `确定要删除设备 "${device.name}" 吗?`,
+    '确认删除',
+    {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger'
+    }
+  ).then(async () => {
+    try {
+        await devicesClient.devicesController_remove(device.id.toString());
+        await fetchDevices();
+        ElMessage.success('设备已删除');
+    } catch (e) {
+        ElMessage.error('删除设备失败');
+    }
+  });
+}
+
+async function handleModalSubmit(formData: Partial<Device>) {
+  try {
+    if (currentDevice.value && currentDevice.value.id) {
+        const dto = new UpdateDeviceDto(formData);
+        await devicesClient.devicesController_update(currentDevice.value.id.toString(), dto);
+        ElMessage.success('设备已更新');
+    } else {
+        const dto = new CreateDeviceDto(formData as any);
+        await devicesClient.devicesController_create(dto);
+        ElMessage.success('设备已添加');
+    }
+    showModal.value = false;
+    await fetchDevices();
+  } catch (e: any) {
+      const msg = e.response?.data?.message || '操作失败';
+      ElMessage.error(msg);
+  }
+}
+
+// --- UI Methods ---
 function toggleDark(force?: boolean) {
   const html = document.documentElement;
   const isCurrentlyDark = html.classList.contains('dark');
@@ -290,42 +379,11 @@ function handleSelect(key: string) {
   activeTab.value = key;
 }
 
-async function handleCheckStatus() {
-  isCheckingStatus.value = true;
-  await store.checkDeviceStatuses();
-  isCheckingStatus.value = false;
-}
-
 function handleScan() {
   if (activeTab.value !== 'scanner') {
     activeTab.value = 'scanner';
   }
-  store.startScan();
-}
-
-async function handleWake(device: Device) {
-  try {
-    await store.wakeDevice(device.macAddress);
-    ElMessage.success(`已向 ${device.name} 发送唤醒包`);
-  } catch (e) {
-    ElMessage.error('唤醒信号发送失败');
-  }
-}
-
-function handleDelete(device: Device) {
-  ElMessageBox.confirm(
-    `确定要删除设备 "${device.name}" 吗?`,
-    '确认删除',
-    {
-      confirmButtonText: '删除',
-      cancelButtonText: '取消',
-      type: 'warning',
-      confirmButtonClass: 'el-button--danger'
-    }
-  ).then(async () => {
-    await store.deleteDevice(device.id);
-    ElMessage.success('设备已删除');
-  });
+  scanStore.startScan();
 }
 
 function openAddModal() {
@@ -339,26 +397,13 @@ function openEditModal(device: Device) {
 }
 
 function addScannedDevice(scanned: ScannedDevice) {
-  currentDevice.value = {
+  currentDevice.value = new Device({
     name: scanned.hostname || '新设备',
     ipAddress: scanned.ip,
     macAddress: scanned.mac,
     notes: ''
-  };
+  } as any);
   showModal.value = true;
-}
-
-async function handleModalSubmit(formData: Partial<Device>) {
-  try {
-    if (currentDevice.value && currentDevice.value.id) {
-      await store.updateDevice(currentDevice.value.id, formData);
-    } else {
-      await store.addDevice(formData);
-    }
-    showModal.value = false;
-  } catch (e) {
-    // Error handled by store
-  }
 }
 
 function copyToClipboard(text: string) {

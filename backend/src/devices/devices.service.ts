@@ -63,7 +63,7 @@ export class DevicesService {
       }
       await execPromise(cmd);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }

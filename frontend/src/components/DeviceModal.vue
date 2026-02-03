@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import type { Device } from '../stores/deviceStore';
+import { Device } from '../api/WolServiceProxies';
 
 const props = defineProps<{
   modelValue: boolean;

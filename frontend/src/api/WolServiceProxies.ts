@@ -17,24 +17,19 @@ export class AppServiceProxy extends ServiceProxyBase {
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, instance?: AxiosInstance) {
-
         super();
-
         this.instance = instance || axios.create();
-
         this.baseUrl = baseUrl ?? "";
-
     }
 
-    appController_getHello( cancelToken?: CancelToken): Promise<void> {
+    appController_getHello(cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
             method: "GET",
             url: url_,
-            headers: {
-            },
+            headers: {},
             cancelToken
         };
 
@@ -53,21 +48,10 @@ export class AppServiceProxy extends ServiceProxyBase {
 
     protected processAppController_getHello(response: AxiosResponse): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 200) {
-            const _responseText = response.data;
             return Promise.resolve<void>(null as any);
-
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
         return Promise.resolve<void>(null as any);
     }
@@ -79,16 +63,12 @@ export class DevicesServiceProxy extends ServiceProxyBase {
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, instance?: AxiosInstance) {
-
         super();
-
         this.instance = instance || axios.create();
-
         this.baseUrl = baseUrl ?? "";
-
     }
 
-    devicesController_create(body: CreateDeviceDto, cancelToken?: CancelToken): Promise<void> {
+    devicesController_create(body: CreateDeviceDto, cancelToken?: CancelToken): Promise<Device> {
         let url_ = this.baseUrl + "/devices";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -117,36 +97,27 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         });
     }
 
-    protected processDevicesController_create(response: AxiosResponse): Promise<void> {
+    protected processDevicesController_create(response: AxiosResponse): Promise<Device> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 201) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            let result201: any = null;
+            result201 = Device.fromJS(_responseText);
+            return Promise.resolve<Device>(result201);
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Device>(null as any);
     }
 
-    devicesController_findAll( cancelToken?: CancelToken): Promise<void> {
+    devicesController_findAll(cancelToken?: CancelToken): Promise<Device[]> {
         let url_ = this.baseUrl + "/devices";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
             method: "GET",
             url: url_,
-            headers: {
-            },
+            headers: {},
             cancelToken
         };
 
@@ -163,36 +134,31 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         });
     }
 
-    protected processDevicesController_findAll(response: AxiosResponse): Promise<void> {
+    protected processDevicesController_findAll(response: AxiosResponse): Promise<Device[]> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 200) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            let result200: any = null;
+            if (Array.isArray(_responseText)) {
+                result200 = [] as any;
+                for (let item of _responseText)
+                    result200!.push(Device.fromJS(item));
+            }
+            return Promise.resolve<Device[]>(result200);
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Device[]>(null as any);
     }
 
-    devicesController_checkStatus( cancelToken?: CancelToken): Promise<void> {
+    devicesController_checkStatus(cancelToken?: CancelToken): Promise<any> {
         let url_ = this.baseUrl + "/devices/status";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
             method: "GET",
             url: url_,
-            headers: {
-            },
+            headers: {},
             cancelToken
         };
 
@@ -209,28 +175,17 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         });
     }
 
-    protected processDevicesController_checkStatus(response: AxiosResponse): Promise<void> {
+    protected processDevicesController_checkStatus(response: AxiosResponse): Promise<any> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return Promise.resolve<any>(response.data);
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<any>(null as any);
     }
 
-    devicesController_findOne(id: string, cancelToken?: CancelToken): Promise<void> {
+    devicesController_findOne(id: string, cancelToken?: CancelToken): Promise<Device> {
         let url_ = this.baseUrl + "/devices/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -240,8 +195,7 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         let options_: AxiosRequestConfig = {
             method: "GET",
             url: url_,
-            headers: {
-            },
+            headers: {},
             cancelToken
         };
 
@@ -258,28 +212,20 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         });
     }
 
-    protected processDevicesController_findOne(response: AxiosResponse): Promise<void> {
+    protected processDevicesController_findOne(response: AxiosResponse): Promise<Device> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+             const _responseText = response.data;
+            let result200: any = null;
+            result200 = Device.fromJS(_responseText);
+            return Promise.resolve<Device>(result200);
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Device>(null as any);
     }
 
-    devicesController_update(id: string, body: UpdateDeviceDto, cancelToken?: CancelToken): Promise<void> {
+    devicesController_update(id: string, body: UpdateDeviceDto, cancelToken?: CancelToken): Promise<Device> {
         let url_ = this.baseUrl + "/devices/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -311,28 +257,20 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         });
     }
 
-    protected processDevicesController_update(response: AxiosResponse): Promise<void> {
+    protected processDevicesController_update(response: AxiosResponse): Promise<Device> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+             const _responseText = response.data;
+            let result200: any = null;
+            result200 = Device.fromJS(_responseText);
+            return Promise.resolve<Device>(result200);
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Device>(null as any);
     }
 
-    devicesController_remove(id: string, cancelToken?: CancelToken): Promise<void> {
+    devicesController_remove(id: string, cancelToken?: CancelToken): Promise<Device> {
         let url_ = this.baseUrl + "/devices/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -342,8 +280,7 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         let options_: AxiosRequestConfig = {
             method: "DELETE",
             url: url_,
-            headers: {
-            },
+            headers: {},
             cancelToken
         };
 
@@ -360,41 +297,28 @@ export class DevicesServiceProxy extends ServiceProxyBase {
         });
     }
 
-    protected processDevicesController_remove(response: AxiosResponse): Promise<void> {
+    protected processDevicesController_remove(response: AxiosResponse): Promise<Device> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+             const _responseText = response.data;
+            let result200: any = null;
+            result200 = Device.fromJS(_responseText);
+            return Promise.resolve<Device>(result200);
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Device>(null as any);
     }
 }
 
 export class WolServiceProxy extends ServiceProxyBase {
     protected instance: AxiosInstance;
     protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, instance?: AxiosInstance) {
-
         super();
-
         this.instance = instance || axios.create();
-
         this.baseUrl = baseUrl ?? "";
-
     }
 
     wolController_wake(body: WakeDeviceDto, cancelToken?: CancelToken): Promise<void> {
@@ -428,39 +352,23 @@ export class WolServiceProxy extends ServiceProxyBase {
 
     protected processWolController_wake(response: AxiosResponse): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
         if (status === 201) {
-            const _responseText = response.data;
             return Promise.resolve<void>(null as any);
-
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
         }
         return Promise.resolve<void>(null as any);
     }
 }
 
-export class CreateDeviceDto implements ICreateDeviceDto {
-    /** The name of the device */
+export class Device implements IDevice {
+    id!: number;
     name!: string;
-    /** The IP address of the device */
     ipAddress!: string;
-    /** The MAC address of the device */
     macAddress!: string;
-    /** Optional notes about the device */
     notes?: string;
 
-    [key: string]: any;
-
-    constructor(data?: ICreateDeviceDto) {
+    constructor(data?: IDevice) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -471,10 +379,7 @@ export class CreateDeviceDto implements ICreateDeviceDto {
 
     init(_data?: any) {
         if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
+            this.id = _data["id"];
             this.name = _data["name"];
             this.ipAddress = _data["ipAddress"];
             this.macAddress = _data["macAddress"];
@@ -482,19 +387,16 @@ export class CreateDeviceDto implements ICreateDeviceDto {
         }
     }
 
-    static fromJS(data: any): CreateDeviceDto {
+    static fromJS(data: any): Device {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateDeviceDto();
+        let result = new Device();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
+        data["id"] = this.id;
         data["name"] = this.name;
         data["ipAddress"] = this.ipAddress;
         data["macAddress"] = this.macAddress;
@@ -503,105 +405,105 @@ export class CreateDeviceDto implements ICreateDeviceDto {
     }
 }
 
-export interface ICreateDeviceDto {
-    /** The name of the device */
+export interface IDevice {
+    id: number;
     name: string;
-    /** The IP address of the device */
     ipAddress: string;
-    /** The MAC address of the device */
     macAddress: string;
-    /** Optional notes about the device */
     notes?: string;
-
-    [key: string]: any;
 }
 
-export class UpdateDeviceDto implements IUpdateDeviceDto {
+export class CreateDeviceDto implements ICreateDeviceDto {
+    name!: string;
+    ipAddress!: string;
+    macAddress!: string;
+    notes?: string;
 
-    [key: string]: any;
-
-    constructor(data?: IUpdateDeviceDto) {
+    constructor(data?: ICreateDeviceDto) {
         if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
+            Object.assign(this, data);
         }
     }
 
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
+    static fromJS(data: any): CreateDeviceDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateDeviceDto();
+        Object.assign(result, data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        Object.assign(data, this);
+        return data;
+    }
+}
+
+export interface ICreateDeviceDto {
+    name: string;
+    ipAddress: string;
+    macAddress: string;
+    notes?: string;
+}
+
+export class UpdateDeviceDto implements IUpdateDeviceDto {
+    name?: string;
+    ipAddress?: string;
+    macAddress?: string;
+    notes?: string;
+
+    constructor(data?: IUpdateDeviceDto) {
+        if (data) {
+             Object.assign(this, data);
         }
     }
 
     static fromJS(data: any): UpdateDeviceDto {
         data = typeof data === 'object' ? data : {};
         let result = new UpdateDeviceDto();
-        result.init(data);
+        Object.assign(result, data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
+        Object.assign(data, this);
         return data;
     }
 }
 
 export interface IUpdateDeviceDto {
-
-    [key: string]: any;
+    name?: string;
+    ipAddress?: string;
+    macAddress?: string;
+    notes?: string;
 }
 
 export class WakeDeviceDto implements IWakeDeviceDto {
-
-    [key: string]: any;
+    macAddress!: string;
 
     constructor(data?: IWakeDeviceDto) {
         if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
+             Object.assign(this, data);
         }
     }
 
     static fromJS(data: any): WakeDeviceDto {
         data = typeof data === 'object' ? data : {};
         let result = new WakeDeviceDto();
-        result.init(data);
+        Object.assign(result, data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
+        Object.assign(data, this);
         return data;
     }
 }
 
 export interface IWakeDeviceDto {
-
-    [key: string]: any;
+    macAddress: string;
 }
 
 export class ApiException extends Error {
@@ -613,7 +515,6 @@ export class ApiException extends Error {
 
     constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
         super();
-
         this.message = message;
         this.status = status;
         this.response = response;

@@ -4,8 +4,8 @@ A simple web interface to scan, manage, and wake devices on your local network.
 
 ## Project Structure
 
-- **backend/**: NestJS application handling scanning, WOL, and data persistence (SQLite).
-- **frontend/**: Vue 3 + Element Plus application for the user interface.
+- **backend/**: NestJS application handling scanning, WOL, and data persistence (SQLite). Features Swagger API docs.
+- **frontend/**: Vue 3 + Element Plus (Auto-imported) + UnoCSS application. Uses NSwag for typed API clients.
 
 ## Prerequisites
 
@@ -22,6 +22,7 @@ npm install
 npm run start
 ```
 The backend will run on `http://localhost:3000`.
+- **API Documentation**: `http://localhost:3000/api` (Swagger UI)
 
 ### 2. Frontend
 
@@ -31,6 +32,11 @@ npm install
 npm run dev
 ```
 The frontend will run on `http://localhost:5173` (or similar).
+
+### Development Tools
+
+- **Generate API Client**: Run `npm run nswag` in `frontend/` to regenerate the API client from the backend Swagger docs.
+
 
 ## Features
 
