@@ -25,7 +25,7 @@ export const useScanStore = defineStore('scan', {
   actions: {
     initSocket() {
       if (this.socket) return;
-      this.socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+      this.socket = io(import.meta.env.VITE_API_URL);
       
       this.socket.on('connect', () => {
         console.log('Connected to WebSocket');
