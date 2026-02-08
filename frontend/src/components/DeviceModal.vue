@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="visible"
-    :title="isEdit ? '编辑设备' : '添加设备'"
-    width="500px"
-    @close="resetForm"
-  >
+  <el-dialog v-model="visible" :title="isEdit ? '编辑设备' : '添加设备'" width="500px" @close="resetForm">
     <el-form :model="form" label-width="100px">
       <el-form-item label="设备名称">
         <el-input v-model.trim="form.name" placeholder="例如：客厅电视" />
@@ -29,44 +24,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
-import { Device } from '../api/WolServiceProxies';
+import { ref, watch, computed } from 'vue'
+import { Device } from '../api/WolServiceProxies'
 
 const props = defineProps<{
-  modelValue: boolean;
-  device: Partial<Device> | null;
-}>();
+  modelValue: boolean
+  device: Partial<Device> | null
+}>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'submit', value: Partial<Device>): void;
-}>();
+  (e: 'update:modelValue', value: boolean): void
+  (e: 'submit', value: Partial<Device>): void
+}>()
 
 const visible = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
-});
+})
 
-const isEdit = computed(() => !!props.device);
+const isEdit = computed(() => !!props.device)
 
 const form = ref<Partial<Device>>({
   name: '',
   ipAddress: '',
   macAddress: '',
   notes: '',
-});
+})
 
 watch(
   () => props.device,
   (val) => {
     if (val) {
-      form.value = { ...val };
+      form.value = { ...val }
     } else {
-      resetForm();
+      resetForm()
     }
   },
-  { immediate: true }
-);
+  { immediate: true },
+)
 
 function resetForm() {
   if (!props.device) {
@@ -75,11 +70,11 @@ function resetForm() {
       ipAddress: '',
       macAddress: '',
       notes: '',
-    };
+    }
   }
 }
 
 function submit() {
-  emit('submit', form.value);
+  emit('submit', form.value)
 }
 </script>

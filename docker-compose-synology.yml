@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
     # image: ghcr.io/ht176/wolpro-backend:latest
     image: wolpro-backend:latest
     container_name: wolpro-backend
     restart: unless-stopped
+    # 群晖/Linux 部署强烈建议使用 host 模式以支持 WOL 和网络扫描
     network_mode: host
     environment:
       - NODE_ENV=production
@@ -14,23 +14,20 @@ services:
       # Host 模式下，服务直接监听宿主机端口
       - PORT=8002
     volumes:
-      - ./data:/app/data
-      # 注意：不要挂载 /app/dist，否则会覆盖镜像中已构建的代码导致启动失败
+      - /volume1/docker/wol/data:/app/data
       # - /volume1/docker/wol/backend/dist:/app/dist
 
   frontend:
-    build: ./frontend
     # image: ghcr.io/ht176/wolpro-frontend:latest
     image: wolpro-frontend:latest
     container_name: wolpro-frontend
     restart: unless-stopped
     ports:
       - "8003:80"
-    # 添加 backend 映射到宿主机网关
+    # 添加 backend 映射到宿主机网关，以便 Nginx 能通过 http://backend:8002 访问宿主机上的后端服务
     extra_hosts:
       - "backend:host-gateway"
-    volumes:
-      # 同理，不要挂载前端静态资源目录，除非用于开发调试
+    # volumes:
       # - /volume1/docker/wol/frontend/dist:/usr/share/nginx/html
     depends_on:
       - backend

@@ -9,11 +9,6 @@
 **/.agents
 **/coverage
 
-# Environment Variables
-.env
-.env.*
-!.env.example
-
 # Frontend
 **/dist-ssr
 *.local

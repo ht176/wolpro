@@ -7,6 +7,7 @@ import { Server } from 'socket.io';
 import { ScanService } from './scan.service';
 
 @WebSocketGateway({
+  namespace: '/',
   cors: {
     origin: '*',
   },

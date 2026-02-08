@@ -7,535 +7,574 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import axios, { AxiosError } from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
-import { ServiceProxyBase } from './ServiceProxyBase';
+import axios, { AxiosError } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios'
+import { ServiceProxyBase } from './ServiceProxyBase'
 
 export class AppServiceProxy extends ServiceProxyBase {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  protected instance: AxiosInstance
+  protected baseUrl: string
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-        super();
-        this.instance = instance || axios.create();
-        this.baseUrl = baseUrl ?? "";
+  constructor(baseUrl?: string, instance?: AxiosInstance) {
+    super()
+    this.instance = instance || axios.create()
+    this.baseUrl = baseUrl ?? ''
+  }
+
+  appController_getHello(cancelToken?: CancelToken): Promise<void> {
+    let url_ = this.baseUrl + '/'
+    url_ = url_.replace(/[?&]$/, '')
+
+    let options_: AxiosRequestConfig = {
+      method: 'GET',
+      url: url_,
+      headers: {},
+      cancelToken,
     }
 
-    appController_getHello(cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {},
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processAppController_getHello(_response));
-        });
-    }
-
-    protected processAppController_getHello(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        if (status === 200) {
-            return Promise.resolve<void>(null as any);
-        } else if (status !== 200 && status !== 204) {
-             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<void>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processAppController_getHello(_response),
+        )
+      })
+  }
+
+  protected processAppController_getHello(response: AxiosResponse): Promise<void> {
+    const status = response.status
+    if (status === 200) {
+      return Promise.resolve<void>(null as any)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
     }
+    return Promise.resolve<void>(null as any)
+  }
 }
 
 export class DevicesServiceProxy extends ServiceProxyBase {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  protected instance: AxiosInstance
+  protected baseUrl: string
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-        super();
-        this.instance = instance || axios.create();
-        this.baseUrl = baseUrl ?? "";
+  constructor(baseUrl?: string, instance?: AxiosInstance) {
+    super()
+    this.instance = instance || axios.create()
+    this.baseUrl = baseUrl ?? ''
+  }
+
+  devicesController_create(body: CreateDeviceDto, cancelToken?: CancelToken): Promise<Device> {
+    let url_ = this.baseUrl + '/devices'
+    url_ = url_.replace(/[?&]$/, '')
+
+    const content_ = JSON.stringify(body)
+
+    let options_: AxiosRequestConfig = {
+      data: content_,
+      method: 'POST',
+      url: url_,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cancelToken,
     }
 
-    devicesController_create(body: CreateDeviceDto, cancelToken?: CancelToken): Promise<Device> {
-        let url_ = this.baseUrl + "/devices";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processDevicesController_create(_response));
-        });
-    }
-
-    protected processDevicesController_create(response: AxiosResponse): Promise<Device> {
-        const status = response.status;
-        if (status === 201) {
-            const _responseText = response.data;
-            let result201: any = null;
-            result201 = Device.fromJS(_responseText);
-            return Promise.resolve<Device>(result201);
-        } else if (status !== 200 && status !== 204) {
-            return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<Device>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processDevicesController_create(_response),
+        )
+      })
+  }
+
+  protected processDevicesController_create(response: AxiosResponse): Promise<Device> {
+    const status = response.status
+    if (status === 201) {
+      const _responseText = response.data
+      let result201: any = null
+      result201 = Device.fromJS(_responseText)
+      return Promise.resolve<Device>(result201)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
+    }
+    return Promise.resolve<Device>(null as any)
+  }
+
+  devicesController_findAll(cancelToken?: CancelToken): Promise<Device[]> {
+    let url_ = this.baseUrl + '/devices'
+    url_ = url_.replace(/[?&]$/, '')
+
+    let options_: AxiosRequestConfig = {
+      method: 'GET',
+      url: url_,
+      headers: {},
+      cancelToken,
     }
 
-    devicesController_findAll(cancelToken?: CancelToken): Promise<Device[]> {
-        let url_ = this.baseUrl + "/devices";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {},
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processDevicesController_findAll(_response));
-        });
-    }
-
-    protected processDevicesController_findAll(response: AxiosResponse): Promise<Device[]> {
-        const status = response.status;
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            if (Array.isArray(_responseText)) {
-                result200 = [] as any;
-                for (let item of _responseText)
-                    result200!.push(Device.fromJS(item));
-            }
-            return Promise.resolve<Device[]>(result200);
-        } else if (status !== 200 && status !== 204) {
-             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<Device[]>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processDevicesController_findAll(_response),
+        )
+      })
+  }
+
+  protected processDevicesController_findAll(response: AxiosResponse): Promise<Device[]> {
+    const status = response.status
+    if (status === 200) {
+      const _responseText = response.data
+      let result200: any = null
+      if (Array.isArray(_responseText)) {
+        result200 = [] as any
+        for (let item of _responseText) result200!.push(Device.fromJS(item))
+      }
+      return Promise.resolve<Device[]>(result200)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
+    }
+    return Promise.resolve<Device[]>(null as any)
+  }
+
+  devicesController_checkStatus(cancelToken?: CancelToken): Promise<any> {
+    let url_ = this.baseUrl + '/devices/status'
+    url_ = url_.replace(/[?&]$/, '')
+
+    let options_: AxiosRequestConfig = {
+      method: 'GET',
+      url: url_,
+      headers: {},
+      cancelToken,
     }
 
-    devicesController_checkStatus(cancelToken?: CancelToken): Promise<any> {
-        let url_ = this.baseUrl + "/devices/status";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {},
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processDevicesController_checkStatus(_response));
-        });
-    }
-
-    protected processDevicesController_checkStatus(response: AxiosResponse): Promise<any> {
-        const status = response.status;
-        if (status === 200) {
-            return Promise.resolve<any>(response.data);
-        } else if (status !== 200 && status !== 204) {
-             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<any>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processDevicesController_checkStatus(_response),
+        )
+      })
+  }
+
+  protected processDevicesController_checkStatus(response: AxiosResponse): Promise<any> {
+    const status = response.status
+    if (status === 200) {
+      return Promise.resolve<any>(response.data)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
+    }
+    return Promise.resolve<any>(null as any)
+  }
+
+  devicesController_findOne(id: string, cancelToken?: CancelToken): Promise<Device> {
+    let url_ = this.baseUrl + '/devices/{id}'
+    if (id === undefined || id === null) throw new globalThis.Error("The parameter 'id' must be defined.")
+    url_ = url_.replace('{id}', encodeURIComponent('' + id))
+    url_ = url_.replace(/[?&]$/, '')
+
+    let options_: AxiosRequestConfig = {
+      method: 'GET',
+      url: url_,
+      headers: {},
+      cancelToken,
     }
 
-    devicesController_findOne(id: string, cancelToken?: CancelToken): Promise<Device> {
-        let url_ = this.baseUrl + "/devices/{id}";
-        if (id === undefined || id === null)
-            throw new globalThis.Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {},
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processDevicesController_findOne(_response));
-        });
-    }
-
-    protected processDevicesController_findOne(response: AxiosResponse): Promise<Device> {
-        const status = response.status;
-        if (status === 200) {
-             const _responseText = response.data;
-            let result200: any = null;
-            result200 = Device.fromJS(_responseText);
-            return Promise.resolve<Device>(result200);
-        } else if (status !== 200 && status !== 204) {
-             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<Device>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processDevicesController_findOne(_response),
+        )
+      })
+  }
+
+  protected processDevicesController_findOne(response: AxiosResponse): Promise<Device> {
+    const status = response.status
+    if (status === 200) {
+      const _responseText = response.data
+      let result200: any = null
+      result200 = Device.fromJS(_responseText)
+      return Promise.resolve<Device>(result200)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
+    }
+    return Promise.resolve<Device>(null as any)
+  }
+
+  devicesController_update(id: string, body: UpdateDeviceDto, cancelToken?: CancelToken): Promise<Device> {
+    let url_ = this.baseUrl + '/devices/{id}'
+    if (id === undefined || id === null) throw new globalThis.Error("The parameter 'id' must be defined.")
+    url_ = url_.replace('{id}', encodeURIComponent('' + id))
+    url_ = url_.replace(/[?&]$/, '')
+
+    const content_ = JSON.stringify(body)
+
+    let options_: AxiosRequestConfig = {
+      data: content_,
+      method: 'PATCH',
+      url: url_,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cancelToken,
     }
 
-    devicesController_update(id: string, body: UpdateDeviceDto, cancelToken?: CancelToken): Promise<Device> {
-        let url_ = this.baseUrl + "/devices/{id}";
-        if (id === undefined || id === null)
-            throw new globalThis.Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "PATCH",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processDevicesController_update(_response));
-        });
-    }
-
-    protected processDevicesController_update(response: AxiosResponse): Promise<Device> {
-        const status = response.status;
-        if (status === 200) {
-             const _responseText = response.data;
-            let result200: any = null;
-            result200 = Device.fromJS(_responseText);
-            return Promise.resolve<Device>(result200);
-        } else if (status !== 200 && status !== 204) {
-             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<Device>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processDevicesController_update(_response),
+        )
+      })
+  }
+
+  protected processDevicesController_update(response: AxiosResponse): Promise<Device> {
+    const status = response.status
+    if (status === 200) {
+      const _responseText = response.data
+      let result200: any = null
+      result200 = Device.fromJS(_responseText)
+      return Promise.resolve<Device>(result200)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
+    }
+    return Promise.resolve<Device>(null as any)
+  }
+
+  devicesController_remove(id: string, cancelToken?: CancelToken): Promise<Device> {
+    let url_ = this.baseUrl + '/devices/{id}'
+    if (id === undefined || id === null) throw new globalThis.Error("The parameter 'id' must be defined.")
+    url_ = url_.replace('{id}', encodeURIComponent('' + id))
+    url_ = url_.replace(/[?&]$/, '')
+
+    let options_: AxiosRequestConfig = {
+      method: 'DELETE',
+      url: url_,
+      headers: {},
+      cancelToken,
     }
 
-    devicesController_remove(id: string, cancelToken?: CancelToken): Promise<Device> {
-        let url_ = this.baseUrl + "/devices/{id}";
-        if (id === undefined || id === null)
-            throw new globalThis.Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "DELETE",
-            url: url_,
-            headers: {},
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processDevicesController_remove(_response));
-        });
-    }
-
-    protected processDevicesController_remove(response: AxiosResponse): Promise<Device> {
-        const status = response.status;
-        if (status === 200) {
-             const _responseText = response.data;
-            let result200: any = null;
-            result200 = Device.fromJS(_responseText);
-            return Promise.resolve<Device>(result200);
-        } else if (status !== 200 && status !== 204) {
-             return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<Device>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processDevicesController_remove(_response),
+        )
+      })
+  }
+
+  protected processDevicesController_remove(response: AxiosResponse): Promise<Device> {
+    const status = response.status
+    if (status === 200) {
+      const _responseText = response.data
+      let result200: any = null
+      result200 = Device.fromJS(_responseText)
+      return Promise.resolve<Device>(result200)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
     }
+    return Promise.resolve<Device>(null as any)
+  }
 }
 
 export class WolServiceProxy extends ServiceProxyBase {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
+  protected instance: AxiosInstance
+  protected baseUrl: string
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-        super();
-        this.instance = instance || axios.create();
-        this.baseUrl = baseUrl ?? "";
+  constructor(baseUrl?: string, instance?: AxiosInstance) {
+    super()
+    this.instance = instance || axios.create()
+    this.baseUrl = baseUrl ?? ''
+  }
+
+  wolController_wake(body: WakeDeviceDto, cancelToken?: CancelToken): Promise<void> {
+    let url_ = this.baseUrl + '/wol'
+    url_ = url_.replace(/[?&]$/, '')
+
+    const content_ = JSON.stringify(body)
+
+    let options_: AxiosRequestConfig = {
+      data: content_,
+      method: 'POST',
+      url: url_,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cancelToken,
     }
 
-    wolController_wake(body: WakeDeviceDto, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/wol";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.transformResult(url_, _response, (_response: AxiosResponse) => this.processWolController_wake(_response));
-        });
-    }
-
-    protected processWolController_wake(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        if (status === 201) {
-            return Promise.resolve<void>(null as any);
-        } else if (status !== 200 && status !== 204) {
-            return throwException("An unexpected server error occurred.", status, "" + response.data, response.headers);
+    return this.transformOptions(options_)
+      .then((transformedOptions_) => {
+        return this.instance.request(transformedOptions_)
+      })
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        return Promise.resolve<void>(null as any);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.transformResult(url_, _response, (_response: AxiosResponse) =>
+          this.processWolController_wake(_response),
+        )
+      })
+  }
+
+  protected processWolController_wake(response: AxiosResponse): Promise<void> {
+    const status = response.status
+    if (status === 201) {
+      return Promise.resolve<void>(null as any)
+    } else if (status !== 200 && status !== 204) {
+      return throwException('An unexpected server error occurred.', status, '' + response.data, response.headers)
     }
+    return Promise.resolve<void>(null as any)
+  }
 }
 
 export class Device implements IDevice {
-    id!: number;
-    name!: string;
-    ipAddress!: string;
-    macAddress!: string;
-    notes?: string;
+  id!: number
+  name!: string
+  ipAddress!: string
+  macAddress!: string
+  notes?: string
 
-    constructor(data?: IDevice) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
+  constructor(data?: IDevice) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (this as any)[property] = (data as any)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.ipAddress = _data["ipAddress"];
-            this.macAddress = _data["macAddress"];
-            this.notes = _data["notes"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.id = _data['id']
+      this.name = _data['name']
+      this.ipAddress = _data['ipAddress']
+      this.macAddress = _data['macAddress']
+      this.notes = _data['notes']
     }
+  }
 
-    static fromJS(data: any): Device {
-        data = typeof data === 'object' ? data : {};
-        let result = new Device();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): Device {
+    data = typeof data === 'object' ? data : {}
+    let result = new Device()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["ipAddress"] = this.ipAddress;
-        data["macAddress"] = this.macAddress;
-        data["notes"] = this.notes;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['id'] = this.id
+    data['name'] = this.name
+    data['ipAddress'] = this.ipAddress
+    data['macAddress'] = this.macAddress
+    data['notes'] = this.notes
+    return data
+  }
 }
 
 export interface IDevice {
-    id: number;
-    name: string;
-    ipAddress: string;
-    macAddress: string;
-    notes?: string;
+  id: number
+  name: string
+  ipAddress: string
+  macAddress: string
+  notes?: string
 }
 
 export class CreateDeviceDto implements ICreateDeviceDto {
-    name!: string;
-    ipAddress!: string;
-    macAddress!: string;
-    notes?: string;
+  name!: string
+  ipAddress!: string
+  macAddress!: string
+  notes?: string
 
-    constructor(data?: ICreateDeviceDto) {
-        if (data) {
-            Object.assign(this, data);
-        }
+  constructor(data?: ICreateDeviceDto) {
+    if (data) {
+      Object.assign(this, data)
     }
+  }
 
-    static fromJS(data: any): CreateDeviceDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateDeviceDto();
-        Object.assign(result, data);
-        return result;
-    }
+  static fromJS(data: any): CreateDeviceDto {
+    data = typeof data === 'object' ? data : {}
+    let result = new CreateDeviceDto()
+    Object.assign(result, data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        Object.assign(data, this);
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    Object.assign(data, this)
+    return data
+  }
 }
 
 export interface ICreateDeviceDto {
-    name: string;
-    ipAddress: string;
-    macAddress: string;
-    notes?: string;
+  name: string
+  ipAddress: string
+  macAddress: string
+  notes?: string
 }
 
 export class UpdateDeviceDto implements IUpdateDeviceDto {
-    name?: string;
-    ipAddress?: string;
-    macAddress?: string;
-    notes?: string;
+  name?: string
+  ipAddress?: string
+  macAddress?: string
+  notes?: string
 
-    constructor(data?: IUpdateDeviceDto) {
-        if (data) {
-             Object.assign(this, data);
-        }
+  constructor(data?: IUpdateDeviceDto) {
+    if (data) {
+      Object.assign(this, data)
     }
+  }
 
-    static fromJS(data: any): UpdateDeviceDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateDeviceDto();
-        Object.assign(result, data);
-        return result;
-    }
+  static fromJS(data: any): UpdateDeviceDto {
+    data = typeof data === 'object' ? data : {}
+    let result = new UpdateDeviceDto()
+    Object.assign(result, data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        Object.assign(data, this);
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    Object.assign(data, this)
+    return data
+  }
 }
 
 export interface IUpdateDeviceDto {
-    name?: string;
-    ipAddress?: string;
-    macAddress?: string;
-    notes?: string;
+  name?: string
+  ipAddress?: string
+  macAddress?: string
+  notes?: string
 }
 
 export class WakeDeviceDto implements IWakeDeviceDto {
-    macAddress!: string;
+  macAddress!: string
 
-    constructor(data?: IWakeDeviceDto) {
-        if (data) {
-             Object.assign(this, data);
-        }
+  constructor(data?: IWakeDeviceDto) {
+    if (data) {
+      Object.assign(this, data)
     }
+  }
 
-    static fromJS(data: any): WakeDeviceDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new WakeDeviceDto();
-        Object.assign(result, data);
-        return result;
-    }
+  static fromJS(data: any): WakeDeviceDto {
+    data = typeof data === 'object' ? data : {}
+    let result = new WakeDeviceDto()
+    Object.assign(result, data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        Object.assign(data, this);
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    Object.assign(data, this)
+    return data
+  }
 }
 
 export interface IWakeDeviceDto {
-    macAddress: string;
+  macAddress: string
 }
 
 export class ApiException extends Error {
-    override message: string;
-    status: number;
-    response: string;
-    headers: { [key: string]: any; };
-    result: any;
+  override message: string
+  status: number
+  response: string
+  headers: { [key: string]: any }
+  result: any
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
+  constructor(message: string, status: number, response: string, headers: { [key: string]: any }, result: any) {
+    super()
+    this.message = message
+    this.status = status
+    this.response = response
+    this.headers = headers
+    this.result = result
+  }
 
-    protected isApiException = true;
+  protected isApiException = true
 
-    static isApiException(obj: any): obj is ApiException {
-        return obj.isApiException === true;
-    }
+  static isApiException(obj: any): obj is ApiException {
+    return obj.isApiException === true
+  }
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
-    if (result !== null && result !== undefined)
-        throw result;
-    else
-        throw new ApiException(message, status, response, headers, null);
+function throwException(
+  message: string,
+  status: number,
+  response: string,
+  headers: { [key: string]: any },
+  result?: any,
+): any {
+  if (result !== null && result !== undefined) throw result
+  else throw new ApiException(message, status, response, headers, null)
 }
 
 function isAxiosError(obj: any): obj is AxiosError {
-    return obj && obj.isAxiosError === true;
+  return obj && obj.isAxiosError === true
 }

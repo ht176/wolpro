@@ -17,7 +17,7 @@ FROM nginx:alpine
 # Copy built static files
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration
+# Copy custom Nginx configuration directly to conf.d (skipping envsubst)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

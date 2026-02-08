@@ -58,12 +58,13 @@ export class DevicesService {
         // MacOS: -c 1 (count), -W 1000 (timeout in ms)
         cmd = `ping -c 1 -W 1000 ${ip}`;
       } else {
-        // Linux: -c 1 (count), -W 1 (timeout in seconds)
-        cmd = `ping -c 1 -W 1 ${ip}`;
+        // Linux (Alpine/Debian): -c 1 (count), -W 2 (timeout in seconds)
+        cmd = `ping -c 1 -W 2 ${ip}`;
       }
       await execPromise(cmd);
       return true;
-    } catch {
+    } catch (e) {
+      console.error(`Ping failed for ${ip}:`, e);
       return false;
     }
   }

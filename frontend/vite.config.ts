@@ -8,4 +8,20 @@ export default defineConfig({
     vue(),
     UnoCSS(),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/socket.io': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        ws: true,
+      }
+    }
+  },
+  build: {
+    sourcemap: true
+  }
 })
