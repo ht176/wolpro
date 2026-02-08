@@ -95,7 +95,10 @@
 
 ## 5. 回答规范
 
-- template中的代码尽量保持在一行
+- template中的一个tag的代码尽量保持在一行，如
+`<el-form-item label="设备名称">
+  <el-input v-model.trim="form.name" placeholder="例如：客厅电视" />
+</el-form-item>`
 
 - 所有变量定义时都要使用类型标注，保存的表单变量使用对应的实体类型标注
 

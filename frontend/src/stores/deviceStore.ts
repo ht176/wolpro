@@ -23,9 +23,10 @@ export const useScanStore = defineStore('scan', {
     socket: null,
   }),
   actions: {
-    initSocket() {
-      if (this.socket) return
-      const url = import.meta.env.VITE_API_URL || ''
+    initSocket(): void {
+      if (this.socket?.connected) return
+      
+      const url: string = import.meta.env.VITE_API_URL || ''
       this.socket = io(url, {
         transports: ['websocket'],
         path: '/socket.io',
@@ -33,6 +34,11 @@ export const useScanStore = defineStore('scan', {
 
       this.socket.on('connect', () => {
         console.log('Connected to WebSocket')
+      })
+
+      this.socket.on('connect_error', (error: Error) => {
+        console.error('Socket connection error:', error)
+        ElMessage.error('无法连接到服务器，请检查后端状态')
       })
 
       this.socket.on('scan:status', (data: { status: string; message?: string }) => {
@@ -43,7 +49,7 @@ export const useScanStore = defineStore('scan', {
           this.isScanning = false
           if (data.status === 'error') {
             ElMessage.error(data.message || '扫描失败')
-          } else {
+          } else if (data.status === 'completed') {
             ElMessage.success('扫描完成')
           }
         }
@@ -53,9 +59,16 @@ export const useScanStore = defineStore('scan', {
         this.scannedDevices = devices || []
       })
     },
-    startScan() {
-      if (!this.socket) this.initSocket()
+    startScan(): void {
+      if (!this.socket?.connected) this.initSocket()
       this.socket?.emit('scan:start')
     },
+    disconnect(): void {
+      if (this.socket) {
+        this.socket.disconnect()
+        this.socket = null
+        this.isScanning = false
+      }
+    }
   },
 })

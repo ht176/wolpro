@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { UpdateDeviceDto } from './dto/update-device.dto';
 import { Device } from './entities/device.entity';
+import { DeviceStatusDto } from './dto/device-status.dto';
 import { exec } from 'child_process';
 import * as util from 'util';
 import * as os from 'os';
@@ -12,32 +13,35 @@ const execPromise = util.promisify(exec);
 
 @Injectable()
 export class DevicesService {
+  private readonly logger = new Logger(DevicesService.name);
+
   constructor(
     @InjectRepository(Device)
     private deviceRepository: Repository<Device>,
   ) {}
 
-  create(createDeviceDto: CreateDeviceDto) {
+  create(createDeviceDto: CreateDeviceDto): Promise<Device> {
     return this.deviceRepository.save(createDeviceDto);
   }
 
-  findAll() {
+  findAll(): Promise<Device[]> {
     return this.deviceRepository.find();
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<Device | null> {
     return this.deviceRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateDeviceDto: UpdateDeviceDto) {
-    return this.deviceRepository.update(id, updateDeviceDto);
+  async update(id: number, updateDeviceDto: UpdateDeviceDto): Promise<Device> {
+    await this.deviceRepository.update(id, updateDeviceDto);
+    return this.findOne(id) as Promise<Device>;
   }
 
-  remove(id: number) {
-    return this.deviceRepository.delete(id);
+  async remove(id: number): Promise<void> {
+    await this.deviceRepository.delete(id);
   }
 
-  async checkAllStatus(): Promise<{ id: number; isOnline: boolean }[]> {
+  async checkAllStatus(): Promise<DeviceStatusDto[]> {
     const devices = await this.findAll();
     const results = await Promise.all(
       devices.map(async (device) => {
@@ -51,20 +55,20 @@ export class DevicesService {
   private async ping(ip: string): Promise<boolean> {
     try {
       let cmd = '';
-      if (os.platform() === 'win32') {
-        // Windows: -n 1 (count), -w 1000 (timeout in ms)
+      const platform = os.platform();
+      
+      if (platform === 'win32') {
         cmd = `ping -n 1 -w 1000 ${ip}`;
-      } else if (os.platform() === 'darwin') {
-        // MacOS: -c 1 (count), -W 1000 (timeout in ms)
+      } else if (platform === 'darwin') {
         cmd = `ping -c 1 -W 1000 ${ip}`;
       } else {
-        // Linux (Alpine/Debian): -c 1 (count), -W 2 (timeout in seconds)
         cmd = `ping -c 1 -W 2 ${ip}`;
       }
+      
       await execPromise(cmd);
       return true;
     } catch (e) {
-      console.error(`Ping failed for ${ip}:`, e);
+      this.logger.debug(`Ping failed for ${ip}: ${e.message}`);
       return false;
     }
   }

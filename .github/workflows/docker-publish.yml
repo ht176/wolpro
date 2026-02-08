@@ -3,6 +3,16 @@ name: Docker Build and Publish
 on:
   push:
     branches: [ "master" ]
+    # 仅当以下文件发生变化时才触发镜像构建
+    # 这样修改业务代码(.ts/.vue)时不会触发构建，节省时间
+    paths:
+      - 'backend/package.json'
+      - 'backend/pnpm-lock.yaml'
+      - 'backend/Dockerfile'
+      - 'frontend/package.json'
+      - 'frontend/pnpm-lock.yaml'
+      - 'frontend/Dockerfile'
+      - '.github/workflows/docker-publish.yml'
   workflow_dispatch:
 
 env:
